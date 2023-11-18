@@ -1,9 +1,15 @@
 import sqlite3
 import sys
 from PyQt5.uic import loadUi
-from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
 from PyQt5.QtCore import Qt
+
+
+class Advisor(QWidget):     # вкладка с советами туристам
+    def __init__(self):
+        super().__init__()
+        loadUi("advisor.ui", self)
 
 
 class MainWindow(QMainWindow):
@@ -17,8 +23,11 @@ class MainWindow(QMainWindow):
         self.tableWidget.setColumnWidth(3, 100)
         self.tableWidget.setColumnWidth(4, 100)
         self.tableWidget.setHorizontalHeaderLabels(["Страна", "Код страны(2)", "Код страны(3)", "Виза", "Флаг"])
+
         self.loaddata()
+
         self.btn_search.clicked.connect(self.SearchModels)
+        self.btn_info.clicked.connect(self.showadvice)
 
     def loaddata(self):  # Отображение базы данных в таблице
         connection = sqlite3.connect("tourism.sqllite")
@@ -42,8 +51,9 @@ class MainWindow(QMainWindow):
                 item = self.tableWidget.item(row, 0)
                 self.tableWidget.setRowHidden(row, name_search not in item.text())
 
-    def showinfo(self):
-        pass
+    def showadvice(self):   # показать советы
+        self.advisor = Advisor()
+        self.advisor.show()
 
 
 app = QApplication(sys.argv)
