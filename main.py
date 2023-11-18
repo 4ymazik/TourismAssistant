@@ -10,6 +10,7 @@ class Advisor(QWidget):     # вкладка с советами туриста�
     def __init__(self):
         super().__init__()
         loadUi("advisor.ui", self)
+        self.advice_text.setVisible(True)
 
 
 class MainWindow(QMainWindow):
