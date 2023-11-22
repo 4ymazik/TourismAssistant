@@ -41,7 +41,7 @@ class MainWindow(QMainWindow):  # окно с таблицей
         self.tableWidget.setColumnWidth(2, 100)
         self.tableWidget.setColumnWidth(3, 100)
         self.tableWidget.setColumnWidth(4, 100)
-        self.tableWidget.setHorizontalHeaderLabels(["Страна", "Код страны(2)", "Код страны(3)", "Виза", "Флаг"])
+        self.tableWidget.setHorizontalHeaderLabels(["Страна", "Код страны(2)", "Код страны(3)", "Виза", "Язык"])
 
         self.loaddata()
 
@@ -60,6 +60,7 @@ class MainWindow(QMainWindow):  # окно с таблицей
             a = self.tableWidget.setItem(tablerow, 1, QtWidgets.QTableWidgetItem(row[1]))
             self.tableWidget.setItem(tablerow, 2, QtWidgets.QTableWidgetItem(row[2]))
             self.tableWidget.setItem(tablerow, 3, QtWidgets.QTableWidgetItem(row[3]))
+            self.tableWidget.setItem(tablerow, 4, QtWidgets.QTableWidgetItem(row[4]))
             tablerow += 1
 
     def searchcountries(self):  # поиск введеного названия страны по таблице
