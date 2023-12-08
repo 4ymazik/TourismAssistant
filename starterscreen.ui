@@ -34,10 +34,10 @@ p, li { white-space: pre-wrap; }
   <widget class="QPushButton" name="btn_table">
    <property name="geometry">
     <rect>
-     <x>300</x>
-     <y>160</y>
-     <width>311</width>
-     <height>61</height>
+     <x>270</x>
+     <y>200</y>
+     <width>341</width>
+     <height>91</height>
     </rect>
    </property>
    <property name="font">
@@ -49,31 +49,13 @@ p, li { white-space: pre-wrap; }
     <string>Таблица стран</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="btn_ratings">
-   <property name="geometry">
-    <rect>
-     <x>300</x>
-     <y>280</y>
-     <width>311</width>
-     <height>61</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>14</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>Рейтинг стран</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="btn_advisor">
    <property name="geometry">
     <rect>
-     <x>300</x>
-     <y>400</y>
-     <width>311</width>
-     <height>61</height>
+     <x>270</x>
+     <y>370</y>
+     <width>341</width>
+     <height>91</height>
     </rect>
    </property>
    <property name="font">

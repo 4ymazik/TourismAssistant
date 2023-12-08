@@ -1,12 +1,14 @@
 import sqlite3
 import sys
+
+from PyQt5.QtGui import QPixmap
 from PyQt5.uic import loadUi
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QTextBrowser
 from PyQt5.QtCore import Qt
 
 
-class StarterScreen(QWidget):   # стартовое окно
+class StarterScreen(QWidget):  # стартовое окно
     def __init__(self):
         super().__init__()
         loadUi("starterscreen.ui", self)
@@ -34,7 +36,9 @@ class Advisor(QWidget):  # вкладка с советами туристам
 class MainWindow(QMainWindow):  # окно с таблицей
     def __init__(self):
         super(MainWindow, self).__init__()
+
         loadUi("tourismhelp.ui", self)
+
         self.tableWidget.setSortingEnabled(True)
         self.tableWidget.setColumnWidth(0, 200)
         self.tableWidget.setColumnWidth(1, 200)
@@ -47,6 +51,7 @@ class MainWindow(QMainWindow):  # окно с таблицей
 
         self.btn_search.clicked.connect(self.searchcountries)
         self.btn_info.clicked.connect(self.showadvice)
+        self.tableWidget.clicked.connect(self.countriesinfo)
 
     def loaddata(self):  # Отображение базы данных в таблице
         connection = sqlite3.connect("tourism.sqllite")
@@ -75,9 +80,33 @@ class MainWindow(QMainWindow):  # окно с таблицей
         self.advisor = Advisor()
         self.advisor.show()
 
+    def countriesinfo(self, index):
+        country_id = index.row() + 1
+        connection = sqlite3.connect("tourism.sqllite")
+        cur = connection.cursor()
+        query = f"SELECT * FROM countries WHERE country_id = {country_id}"
+        self.countryinfo = CountryInfo()
+        self.countryinfo.show()
+        for row in cur.execute(query):
+            self.countryinfo.country_name.setText(row[0])
+            self.countryinfo.text.setText(f'Столица: {row[5]}\n'
+                                          f'Язык: {row[4]}')
+            pixmap = QPixmap(f'flags\{row[1]}.png')
+            self.countryinfo.flag.setPixmap(pixmap)
+            self.countryinfo.flag.show()
+
+
+
+
+class CountryInfo(QWidget):
+    def __init__(self):
+        super().__init__()
+        loadUi("country_info.ui", self)
+
+
 
 app = QApplication(sys.argv)
-starterscreen= StarterScreen()
+starterscreen = StarterScreen()
 widget = QtWidgets.QStackedWidget()
 widget.addWidget(starterscreen)
 widget.setFixedHeight(550)
