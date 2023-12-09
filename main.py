@@ -4,7 +4,7 @@ import sys
 from PyQt5.QtGui import QPixmap
 from PyQt5.uic import loadUi
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QTextBrowser
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
 from PyQt5.QtCore import Qt
 
 
@@ -44,8 +44,8 @@ class MainWindow(QMainWindow):  # окно с таблицей
         self.tableWidget.setColumnWidth(1, 200)
         self.tableWidget.setColumnWidth(2, 100)
         self.tableWidget.setColumnWidth(3, 100)
-        self.tableWidget.setColumnWidth(4, 100)
-        self.tableWidget.setHorizontalHeaderLabels(["Страна", "Код страны(2)", "Код страны(3)", "Виза", "Язык"])
+        self.tableWidget.setColumnWidth(4, 200)
+        self.tableWidget.setHorizontalHeaderLabels(["Страна", "Виза", "Язык", "Столица", "Население"])
 
         self.loaddata()
 
@@ -62,10 +62,10 @@ class MainWindow(QMainWindow):  # окно с таблицей
         tablerow = 0
         for row in cur.execute(sqlquery):
             self.tableWidget.setItem(tablerow, 0, QtWidgets.QTableWidgetItem(row[0]))
-            a = self.tableWidget.setItem(tablerow, 1, QtWidgets.QTableWidgetItem(row[1]))
+            self.tableWidget.setItem(tablerow, 1, QtWidgets.QTableWidgetItem(row[1]))
             self.tableWidget.setItem(tablerow, 2, QtWidgets.QTableWidgetItem(row[2]))
             self.tableWidget.setItem(tablerow, 3, QtWidgets.QTableWidgetItem(row[3]))
-            self.tableWidget.setItem(tablerow, 4, QtWidgets.QTableWidgetItem(row[4]))
+            self.tableWidget.setItem(tablerow, 4, QtWidgets.QTableWidgetItem(str(row[4])))
             tablerow += 1
 
     def searchcountries(self):  # поиск введеного названия страны по таблице
@@ -89,8 +89,8 @@ class MainWindow(QMainWindow):  # окно с таблицей
         self.countryinfo.show()
         for row in cur.execute(query):
             self.countryinfo.country_name.setText(row[0])
-            self.countryinfo.text.setText(f'Столица: {row[5]}\n'
-                                          f'Язык: {row[4]}')
+            self.countryinfo.text.setText(f'Столица: {row[3]}\n'
+                                          f'Язык: {row[2]}')
             pixmap = QPixmap(f'flags\{row[1]}.png')
             self.countryinfo.flag.setPixmap(pixmap)
             self.countryinfo.flag.show()
