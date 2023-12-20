@@ -90,8 +90,11 @@ class MainWindow(QMainWindow):  # окно с таблицей
         for row in cur.execute(query):
             self.countryinfo.country_name.setText(row[0])
             self.countryinfo.text.setText(f'Столица: {row[3]}\n'
-                                          f'Язык: {row[2]}')
-            pixmap = QPixmap(f'flags\{row[1]}.png')
+                                          f'Язык: {row[2]}\n'
+                                          f'Население: {row[4]} человек\n'
+                                          f'{row[-1]}')
+            pixmap = QPixmap(f'flags\{row[-3]}.png')
+            self.countryinfo.text.setWordWrap(True)
             self.countryinfo.flag.setPixmap(pixmap)
             self.countryinfo.flag.show()
 
