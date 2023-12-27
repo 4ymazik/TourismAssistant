@@ -4,7 +4,7 @@ import sys
 from PyQt5.QtGui import QPixmap
 from PyQt5.uic import loadUi
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QMessageBox
 from PyQt5.QtCore import Qt
 
 
@@ -13,14 +13,15 @@ class StarterScreen(QWidget):  # стартовое окно
         super().__init__()
         loadUi("starterscreen.ui", self)
         self.setWindowTitle("Справочник для туристов")
-        self.btn_advisor.clicked.connect(self.loadadvisorscreen)
-        self.btn_table.clicked.connect(self.loadtablescreen)
+        self.btn_advisor.clicked.connect(self.load_advisor_screen)
+        self.btn_table.clicked.connect(self.load_table_screen)
 
-    def loadtablescreen(self):
+    def load_table_screen(self):
         self.mainwindow = MainWindow()
         self.mainwindow.show()
+        self.close()
 
-    def loadadvisorscreen(self):
+    def load_advisor_screen(self):
         self.advisor = Advisor()
         self.advisor.show()
 
@@ -47,28 +48,28 @@ class MainWindow(QMainWindow):  # окно с таблицей
         self.tableWidget.setColumnWidth(4, 200)
         self.tableWidget.setHorizontalHeaderLabels(["Страна", "Виза", "Язык", "Столица", "Население"])
 
-        self.loaddata()
+        self.load_data()
 
-        self.btn_search.clicked.connect(self.searchcountries)
-        self.btn_info.clicked.connect(self.showadvice)
-        self.tableWidget.clicked.connect(self.countriesinfo)
+        self.btn_search.clicked.connect(self.search_countries)
+        self.btn_info.clicked.connect(self.show_advice)
+        self.tableWidget.clicked.connect(self.countries_info)
 
-    def loaddata(self):  # Отображение базы данных в таблице
+    def load_data(self):  # Отображение базы данных в таблице
         connection = sqlite3.connect("tourism.sqllite")
         cur = connection.cursor()
         sqlquery = "SELECT * FROM countries"
 
         self.tableWidget.setRowCount(193)
-        tablerow = 0
+        table_row = 0
         for row in cur.execute(sqlquery):
-            self.tableWidget.setItem(tablerow, 0, QtWidgets.QTableWidgetItem(row[0]))
-            self.tableWidget.setItem(tablerow, 1, QtWidgets.QTableWidgetItem(row[1]))
-            self.tableWidget.setItem(tablerow, 2, QtWidgets.QTableWidgetItem(row[2]))
-            self.tableWidget.setItem(tablerow, 3, QtWidgets.QTableWidgetItem(row[3]))
-            self.tableWidget.setItem(tablerow, 4, QtWidgets.QTableWidgetItem(str(row[4])))
-            tablerow += 1
+            self.tableWidget.setItem(table_row, 0, QtWidgets.QTableWidgetItem(row[0]))
+            self.tableWidget.setItem(table_row, 1, QtWidgets.QTableWidgetItem(row[1]))
+            self.tableWidget.setItem(table_row, 2, QtWidgets.QTableWidgetItem(row[2]))
+            self.tableWidget.setItem(table_row, 3, QtWidgets.QTableWidgetItem(row[3]))
+            self.tableWidget.setItem(table_row, 4, QtWidgets.QTableWidgetItem(str(row[4])))
+            table_row += 1
 
-    def searchcountries(self):  # поиск введеного названия страны по таблице
+    def search_countries(self):  # поиск введеного названия страны по таблице
         name_search = self.search_field.text()
         for row in range(self.tableWidget.rowCount()):
             matching_items = self.tableWidget.findItems(name_search, Qt.MatchContains)
@@ -76,11 +77,11 @@ class MainWindow(QMainWindow):  # окно с таблицей
                 item = self.tableWidget.item(row, 0)
                 self.tableWidget.setRowHidden(row, name_search not in item.text())
 
-    def showadvice(self):  # показать советы
+    def show_advice(self):  # показать советы
         self.advisor = Advisor()
         self.advisor.show()
 
-    def countriesinfo(self, index):
+    def countries_info(self, index):
         country_id = index.row() + 1
         connection = sqlite3.connect("tourism.sqllite")
         cur = connection.cursor()
@@ -92,13 +93,20 @@ class MainWindow(QMainWindow):  # окно с таблицей
             self.countryinfo.text.setText(f'Столица: {row[3]}\n'
                                           f'Язык: {row[2]}\n'
                                           f'Население: {row[4]} человек\n'
-                                          f'{row[-1]}')
-            pixmap = QPixmap(f'flags\{row[-3]}.png')
+                                          f'Описание:\n'
+                                          f' {row[-1]}')
+            pixmap = QPixmap(f'flags{row[-3]}.png')
             self.countryinfo.text.setWordWrap(True)
             self.countryinfo.flag.setPixmap(pixmap)
             self.countryinfo.flag.show()
 
-
+    def closeEvent(self, event):
+        reply = QMessageBox.question(self, 'Сообщение',
+                                     "Вы уверены, что хотите выйти?", QMessageBox.Yes, QMessageBox.No)
+        if reply == QMessageBox.Да:
+            event.accept()
+        else:
+            event.ignore()
 
 
 class CountryInfo(QWidget):
@@ -107,13 +115,13 @@ class CountryInfo(QWidget):
         loadUi("country_info.ui", self)
 
 
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    starterscreen = StarterScreen()
+    widget = QtWidgets.QStackedWidget()
+    widget.addWidget(starterscreen)
+    widget.setFixedHeight(550)
+    widget.setFixedWidth(1000)
+    widget.show()
 
-app = QApplication(sys.argv)
-starterscreen = StarterScreen()
-widget = QtWidgets.QStackedWidget()
-widget.addWidget(starterscreen)
-widget.setFixedHeight(550)
-widget.setFixedWidth(1000)
-widget.show()
-
-sys.exit(app.exec_())
+    sys.exit(app.exec_())
