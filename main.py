@@ -19,8 +19,7 @@ class StarterScreen(QWidget):  # стартовое окно
     def load_table_screen(self):
         self.mainwindow = MainWindow()
         self.mainwindow.show()
-        self.close()
-
+        
     def load_advisor_screen(self):
         self.advisor = Advisor()
         self.advisor.show()
@@ -81,7 +80,7 @@ class MainWindow(QMainWindow):  # окно с таблицей
         self.advisor = Advisor()
         self.advisor.show()
 
-    def countries_info(self, index):
+    def countries_info(self, index):  # вкладка с подробной информацией про страну
         country_id = index.row() + 1
         connection = sqlite3.connect("tourism.sqllite")
         cur = connection.cursor()
@@ -95,21 +94,22 @@ class MainWindow(QMainWindow):  # окно с таблицей
                                           f'Население: {row[4]} человек\n'
                                           f'Описание:\n'
                                           f' {row[-1]}')
-            pixmap = QPixmap(f'flags{row[-3]}.png')
+            pixmap = QPixmap(f'flags/{row[-2]}.png')
             self.countryinfo.text.setWordWrap(True)
             self.countryinfo.flag.setPixmap(pixmap)
             self.countryinfo.flag.show()
 
-    def closeEvent(self, event):
+    def closeEvent(self, event):  # подтверждение выхода из приложения
         reply = QMessageBox.question(self, 'Сообщение',
                                      "Вы уверены, что хотите выйти?", QMessageBox.Yes, QMessageBox.No)
-        if reply == QMessageBox.Да:
+        if reply == QMessageBox.Yes:
             event.accept()
+            sys.exit(app.exec_())
         else:
             event.ignore()
 
 
-class CountryInfo(QWidget):
+class CountryInfo(QWidget):  # виджет с информацией про выбранную страну
     def __init__(self):
         super().__init__()
         loadUi("country_info.ui", self)
